@@ -9,8 +9,8 @@ export class Player {
         try {
             const result = await BABYLON.SceneLoader.ImportMeshAsync(
                 "",
-                "assets/models/source/", // VERIFIQUE ESTE CAMINHO CUIDADOSAMENTE!
-                "ps.fbx",
+                "assets/models/", // VERIFIQUE ESTE CAMINHO CUIDADOSAMENTE!
+                "raw_meat.glb",
                 this.scene // The scene to load the model into
             );
 
@@ -45,9 +45,9 @@ export class Player {
 
         } catch (error) {
             // Este log mostrará mais detalhes do erro
-            console.log("Error loading player model:", error.message || error);
+            console.error("Error loading player model:", error.message || error);
             if (error.stack) {
-                console.log("Stack trace:", error.stack);
+                console.error("Stack trace:", error.stack);
             }
         }
     }

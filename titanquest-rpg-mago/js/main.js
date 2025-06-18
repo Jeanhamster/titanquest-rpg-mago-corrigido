@@ -27,7 +27,8 @@ const createGameScene = async () => {
     }, scene); // Create the ground mesh
 
     const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene); // Create a material for the ground
-    const groundTexture = new BABYLON.Texture("assets/textures/textures/terra.jpg", scene); // Load the ground texture
+    // **CORRECTION:** Ensure the texture path is correct relative to index.html
+    const groundTexture = new BABYLON.Texture("assets/textures/textures/grama.jpg", scene); // Load the ground texture
 
     groundTexture.uScale = 10; // Repeat texture 10x on X axis
     groundTexture.vScale = 10; // Repeat texture 10x on Y axis

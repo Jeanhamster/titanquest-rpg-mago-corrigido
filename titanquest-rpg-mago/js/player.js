@@ -10,16 +10,16 @@ export class Player {
             const result = await BABYLON.SceneLoader.ImportMeshAsync(
                 "",
                 "assets/models/", // VERIFIQUE ESTE CAMINHO CUIDADOSAMENTE!
-                "raw_meat.glb",
+                "veado.glb", //
                 this.scene // The scene to load the model into
             );
 
             this.mesh = result.meshes[0]; // Get the main mesh
             this.mesh.name = "Player"; // Name the mesh
-            this.mesh.position = new BABYLON.Vector3(0, 0.5, 0); // Initial position, slightly above ground
+            this.mesh.position = new BABYLON.Vector3(0, 0.05, 0); // Initial position, slightly above ground
 
             // Adjust scale if necessary
-            this.mesh.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5); // Adjust scale to 50%
+            this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1); // Adjust scale to 50%
 
             // Configure collisions
             this.mesh.checkCollisions = true; // Enable collisions for the player mesh

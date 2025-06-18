@@ -13,7 +13,8 @@ const createGameScene = async () => {
 
     // Camera
     const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, BABYLON.Vector3.Zero(), scene); // Create a camera
-    camera.attachControl(canvas, true); // Attach camera controls to canvas
+    // Remover ou comentar camera.attachControl(canvas, true) pois o player já controla a rotação com o mouse.
+    // camera.attachControl(canvas, true); // Comente esta linha para evitar conflito com o controle do player.
     camera.setTarget(BABYLON.Vector3.Zero()); // Set camera target
 
     // Light
@@ -21,13 +22,12 @@ const createGameScene = async () => {
     light.intensity = 0.7; // Set light intensity
 
     // Ground
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", { 
-        width: 100, 
-        height: 100 
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", {
+        width: 100,
+        height: 100
     }, scene); // Create the ground mesh
 
     const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene); // Create a material for the ground
-    // **CORRECTION:** Ensure the texture path is correct relative to index.html
     const groundTexture = new BABYLON.Texture("assets/textures/textures/grama.jpg", scene); // Load the ground texture
 
     groundTexture.uScale = 10; // Repeat texture 10x on X axis
@@ -38,9 +38,40 @@ const createGameScene = async () => {
     ground.material = groundMaterial; // Apply material to the ground
     ground.receiveShadows = true; // Allow shadows on the ground
 
+    // Enable collisions for the scene
+    scene.collisionsEnabled = true; // Enable scene-wide collisions
+    scene.gravity = new BABYLON.Vector3(0, -9.81, 0); // Apply gravity
+
     // Player
     player = new Player(scene); // Create a new Player instance
     await player.loadModel(); // Load the player model asynchronously
+
+    // Faça a câmera acompanhar a rotação e posição do player
+    if (player.mesh) {
+        // Criar um "pai" invisível para a câmera que herda a rotação do player
+        const cameraRig = new BABYLON.TransformNode("cameraRig", scene);
+        cameraRig.parent = player.mesh; // O rig segue o player
+        cameraRig.position = new BABYLON.Vector3(0, 0, 0); // Posição do rig relativa ao player
+
+        camera.parent = cameraRig; // A câmera é filha do rig
+        camera.position = new BABYLON.Vector3(0, 5, -7); // Posição da câmera relativa ao rig (atrás e acima)
+        camera.setTarget(BABYLON.Vector3.Zero()); // Alvo da câmera é o centro do rig (que está no player)
+        camera.useFramingBehavior = true; // Opcional: para um comportamento mais suave de seguir
+        camera.framingBehavior.framingTime = 0; // Ajuste para quão rápido a câmera "alcança"
+        camera.framingBehavior.elasticity = 0; // Ajuste para a suavidade do movimento
+        camera.radius =100;//stância da câmera ao alvo (player)
+        camera.lowerRadiusLimit = 5; // Limite mínimo de zoom
+        camera.upperRadiusLimit = 200; // Limite máximo de zoom
+        camera.wheelPrecision = 100; // Sensibilidade do zoom com a roda do mouse
+
+        // Sincronizar a rotação horizontal da câmera com a do player
+        scene.onBeforeRenderObservable.add(() => {
+            if (player.mesh) {
+                cameraRig.rotation.y = player.mesh.rotation.y; // O rig da câmera herda a rotação Y do player
+            }
+        });
+    }
+
 
     // UI Setup
     setupUI(scene); // Initialize the UI
